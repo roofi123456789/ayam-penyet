@@ -190,6 +190,54 @@ $flash = getFlash();
             min-height: 100vh;
         }
 
+        /* INTERACTIVE STAT CARD */
+.stat-card {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+/* hover naik dikit */
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+}
+
+/* saat ditekan */
+.stat-card:active {
+    transform: scale(0.96);
+}
+
+/* ripple effect */
+.stat-card::after {
+    content: "";
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: rgba(0,0,0,0.08);
+    border-radius: 50%;
+    transform: scale(0);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* trigger ripple */
+.stat-card.ripple::after {
+    animation: rippleEffect 0.5s ease;
+}
+
+@keyframes rippleEffect {
+    0% {
+        transform: scale(0);
+        opacity: 0.4;
+    }
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
         /* TOP BAR */
         .topbar {
             background: white;
@@ -900,6 +948,16 @@ $flash = getFlash();
         }
     `;
     document.head.appendChild(style);
+
+    // ripple click effect
+document.querySelectorAll('.stat-card').forEach(card => {
+    card.addEventListener('click', function(e) {
+        // reset ripple
+        this.classList.remove('ripple');
+        void this.offsetWidth; // trigger reflow
+        this.classList.add('ripple');
+    });
+});
 </script>
 </body>
 </html>
