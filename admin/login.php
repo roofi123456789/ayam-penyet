@@ -43,6 +43,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     <style>
+
+        /* ANIMASI LOGO */
+.logo-box {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    margin: 0 auto 16px;
+    box-shadow: 0 12px 32px rgba(232,64,64,0.4);
+
+    /* tambahan animasi */
+    animation: float 3s ease-in-out infinite, glow 2.5s ease-in-out infinite alternate;
+    transition: transform 0.3s ease;
+}
+
+/* efek hover */
+.logo-box:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* animasi naik turun */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+/* efek glow */
+@keyframes glow {
+    0% {
+        box-shadow: 0 12px 32px rgba(232,64,64,0.4);
+    }
+    100% {
+        box-shadow: 0 18px 40px rgba(232,64,64,0.7);
+    }
+}
+
         :root {
             --primary: #E84040;
             --primary-dark: #C42E2E;
