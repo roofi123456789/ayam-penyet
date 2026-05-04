@@ -245,7 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="login-wrapper">
     <div class="login-header">
         <div class="logo-box">🍗</div>
-        <h1> Admin</h1>
+        <h1> Admin login </h1>
         <p><?= APP_NAME ?></p>
     </div>
 
