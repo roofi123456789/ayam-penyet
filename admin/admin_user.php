@@ -133,8 +133,8 @@ $flash = getFlash();
 <body>
 <div class="sidebar">
     <div class="sidebar-logo">
-        <div style="font-size:28px;margin-bottom:8px">🍗</div>
-        <h2>Ayam Penyet</h2>
+        <div style="font-size:28px;margin-bottom:8px">🍽️</div>
+        <h2>AYAM PENYET</h2>
         <p>Bendungan Batusangkar</p>
     </div>
     <div class="nav-section">
