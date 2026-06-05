@@ -594,11 +594,11 @@ $jumlah_keranjang = getJumlahKeranjang();
                     $emoji = $foodEmojis[$menu['id'] % count($foodEmojis)];
                     $hasImg = !empty($menu['gambar']) 
                               && $menu['gambar'] !== 'default.jpg'
-                              && file_exists(__DIR__ . '/admin/assets/images/' . $menu['gambar']);
+                              && file_exists(__DIR__ . '/assets/images/' . $menu['gambar']);
                     ?>
                     <?php if ($hasImg): ?>
                     <div class="menu-img-wrapper" style="position:relative;">
-                        <img src="admin/assets/images/<?= htmlspecialchars($menu['gambar']) ?>"
+                        <img src="assets/images/<?= htmlspecialchars($menu['gambar']) ?>"
                              alt="<?= htmlspecialchars($menu['nama_menu']) ?>"
                              class="menu-card-img">
                     </div>
