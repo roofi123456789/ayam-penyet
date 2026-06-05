@@ -4,7 +4,7 @@
 // Kasir cetak/print struk untuk pelanggan
 // ============================================
 require_once '../koneksi.php';
-requireAdminLogin();
+requireRole('admin');
 // Safe query - handle missing columns gracefully
 $stat_pending_pay = 0;
 try {

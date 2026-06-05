@@ -1,6 +1,6 @@
 <?php
 require_once '../koneksi.php';
-requireAdminLogin();
+requireRole('admin');
 // Pending payment badge
 // Safe query - handle missing columns gracefully
 $stat_pending_pay = 0;

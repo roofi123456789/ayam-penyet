@@ -1,6 +1,6 @@
 <?php
 require_once '../koneksi.php';
-requireAdminLogin();
+requireRole('admin');
 // Pending payment badge
 // Safe query - handle missing columns gracefully
 $stat_pending_pay = 0;
@@ -42,9 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = 'Ukuran gambar maksimal 2MB';
         } else {
             $filename = 'menu_' . time() . '_' . rand(100,999) . '.' . $ext;
-            $dest = __DIR__ . '/assets/images/' . $filename;
-            if (!is_dir(__DIR__ . '/assets/images/')) {
-                mkdir(__DIR__ . '/assets/images/', 0755, true);
+            $dest = __DIR__ . '/../assets/images/' . $filename;
+            if (!is_dir(__DIR__ . '/../assets/images/')) {
+                mkdir(__DIR__ . '/../assets/images/', 0755, true);
             }
             if (move_uploaded_file($file['tmp_name'], $dest)) {
                 $gambar = $filename;

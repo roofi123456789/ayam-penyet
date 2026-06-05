@@ -1,6 +1,6 @@
 <?php
 require_once '../koneksi.php';
-requireAdminLogin();
+requireRole('admin');
 // Pending payment badge
 // Safe query - handle missing columns gracefully
 $stat_pending_pay = 0;
@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $username = sanitize($_POST['username'] ?? '');
         $nama     = sanitize($_POST['nama'] ?? '');
         $password = $_POST['password'] ?? '';
-        $role     = in_array($_POST['role']??'', ['admin','kasir']) ? $_POST['role'] : 'kasir';
+        $role     = in_array($_POST['role']??'', ['admin','kasir','kitchen']) ? $_POST['role'] : 'kasir';
 
         if (strlen($password) < 6) {
             setFlash('error', 'Password minimal 6 karakter!');
@@ -137,20 +137,26 @@ $flash = getFlash();
         <h2>AYAM PENYET</h2>
         <p>Bendungan Batusangkar</p>
     </div>
-    <div class="nav-section">
-        <div class="nav-lbl">Menu Utama</div>
-        <div class="nav-item"><a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></div>
-        <div class="nav-item"><a href="konfirmasi_bayar.php"><i class="fas fa-cash-register"></i> Konfirmasi Bayar</a></div>
-        <div class="nav-item"><a href="menu.php"><i class="fas fa-utensils"></i> Kelola Menu</a></div>
-        <div class="nav-item"><a href="kategori.php"><i class="fas fa-tags"></i> Kategori</a></div>
-        <div class="nav-item"><a href="kitchen.php"><i class="fas fa-tv"></i> Kitchen Display</a></div>
-        <div class="nav-item"><a href="laporan.php"><i class="fas fa-chart-bar"></i> Laporan</a></div>
-        <div class="nav-item"><a href="qrcode.php"><i class="fas fa-qrcode"></i> QR Code</a></div>
-        <div class="nav-item"><a href="meja.php"><i class="fas fa-chair"></i> Manajemen Meja</a></div>
-        <div class="nav-item"><a href="admin_user.php" class="active"><i class="fas fa-users-cog"></i> Kelola Admin</a></div>
-    </div>
-    <div class="sidebar-footer">
-        <a href="logout.php" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Keluar</a>
+            <div class="nav-section">
+            <div class="nav-section-label">Pantau</div>
+            <div class="nav-item">
+                <a href="dashboard.php">
+                    <i class="fas fa-chart-line"></i> Dashboard Pesanan
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="laporan.php">
+                    <i class="fas fa-chart-bar"></i> Laporan
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="admin_user.php" class="active">
+                    <i class="fas fa-users-cog"></i> Kelola Pengguna
+                </a>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+        <a href="../logout.php" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Keluar</a>
     </div>
 </div>
 
@@ -215,7 +221,15 @@ $flash = getFlash();
                         <label class="form-lbl">Password *</label>
                         <input type="password" name="password" class="form-inp" placeholder="Min. 6 karakter" required>
                     </div>
-                    <div class="col-md-2 d-flex align-items-end">
+                    <div class="col-md-2">
+                        <label class="form-lbl">Role *</label>
+                        <select name="role" class="form-inp">
+                            <option value="kasir">Kasir</option>
+                            <option value="admin">Admin</option>
+                            <option value="kitchen">Kitchen</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
                         <button type="submit" class="btn-submit w-100">
                             <i class="fas fa-user-plus me-1"></i>Tambah
                         </button>

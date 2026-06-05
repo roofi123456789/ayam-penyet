@@ -1,6 +1,6 @@
 <?php
 require_once '../koneksi.php';
-requireAdminLogin();
+requireRole('admin');
 // Pending payment badge
 // Safe query - handle missing columns gracefully
 $stat_pending_pay = 0;
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'hapus
         $stmt->close();
 
         if ($row && $row['gambar'] && $row['gambar'] !== 'default.jpg') {
-            $imgPath = __DIR__ . '/assets/images/' . $row['gambar'];
+            $imgPath = __DIR__ . '/../assets/images/' . $row['gambar'];
             if (file_exists($imgPath)) unlink($imgPath);
         }
 
@@ -219,10 +219,10 @@ $flash = getFlash();
             <div class="menu-card" id="menuCard-<?= $menu['id'] ?>">
                 <div class="menu-card-img">
                     <?php
-                    $imgPath = __DIR__ . '/assets/images/' . $menu['gambar'];
+                    $imgPath = __DIR__ . '/../assets/images/' . $menu['gambar'];
                     if ($menu['gambar'] && $menu['gambar'] !== 'default.jpg' && file_exists($imgPath)):
                     ?>
-                    <img src="assets/images/<?= htmlspecialchars($menu['gambar']) ?>" alt="<?= htmlspecialchars($menu['nama_menu']) ?>">
+                    <img src="../assets/images/<?= htmlspecialchars($menu['gambar']) ?>" alt="<?= htmlspecialchars($menu['nama_menu']) ?>">
                     <?php else: ?>
                     <?= $emoji ?>
                     <?php endif; ?>
