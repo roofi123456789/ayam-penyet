@@ -13,6 +13,14 @@ $stat_pending_pay = 0;
 $col_check = $conn->query("SHOW COLUMNS FROM pesanan LIKE 'status_verifikasi'");
 $columns_ok = ($col_check && $col_check->num_rows > 0);
 
+// Check if nama_pelanggan column exists
+$nama_col_check = $conn->query("SHOW COLUMNS FROM pesanan LIKE 'nama_pelanggan'");
+$nama_col_ok = ($nama_col_check && $nama_col_check->num_rows > 0);
+// Auto-add nama_pelanggan column if missing
+if (!$nama_col_ok) {
+    $conn->query("ALTER TABLE pesanan ADD COLUMN IF NOT EXISTS nama_pelanggan VARCHAR(100) DEFAULT 'Pelanggan'");
+}
+
 $cash_list = [];
 $qris_list = [];
 
@@ -290,8 +298,12 @@ $flash = getFlash();
                         $nm_k = trim($p['nama_pelanggan'] ?? '');
                         $nm_k = ($nm_k && $nm_k !== '0') ? $nm_k : 'Pelanggan';
                     ?>
-                    <div class="info-item-sm" style="grid-column:1/-1;background:#EFF6FF;border-radius:8px;padding:6px 10px">
-                        👤 Pemesan: <strong style="color:#2563EB"><?= htmlspecialchars($nm_k) ?></strong>
+                    <div class="info-item-sm" style="grid-column:1/-1;background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px">
+                        <span style="font-size:20px">👤</span>
+                        <div>
+                            <div style="font-size:11px;color:#6B7280;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Nama Pemesan</div>
+                            <div style="font-size:16px;font-weight:800;color:#1D4ED8"><?= htmlspecialchars($nm_k) ?></div>
+                        </div>
                     </div>
                     <div class="info-item-sm">Items <strong><?= $p['jml_item'] ?> item</strong></div>
                     <div class="info-item-sm">Total <strong style="color:var(--primary)"><?= formatRupiah($p['total_harga']) ?></strong></div>
@@ -368,8 +380,12 @@ $flash = getFlash();
                         $nm_k = trim($p['nama_pelanggan'] ?? '');
                         $nm_k = ($nm_k && $nm_k !== '0') ? $nm_k : 'Pelanggan';
                     ?>
-                    <div class="info-item-sm" style="grid-column:1/-1;background:#EFF6FF;border-radius:8px;padding:6px 10px">
-                        👤 Pemesan: <strong style="color:#2563EB"><?= htmlspecialchars($nm_k) ?></strong>
+                    <div class="info-item-sm" style="grid-column:1/-1;background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px">
+                        <span style="font-size:20px">👤</span>
+                        <div>
+                            <div style="font-size:11px;color:#6B7280;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Nama Pemesan</div>
+                            <div style="font-size:16px;font-weight:800;color:#1D4ED8"><?= htmlspecialchars($nm_k) ?></div>
+                        </div>
                     </div>
                     <div class="info-item-sm">Transfer <strong style="color:var(--primary)"><?= formatRupiah($p['total_harga']) ?></strong></div>
                     <div class="info-item-sm">Tujuan <strong>083803293430</strong></div>
