@@ -41,7 +41,7 @@ $conn->begin_transaction();
 try {
     // Insert pesanan
     $stmt = $conn->prepare("INSERT INTO pesanan (kode_pesanan, nomor_meja, nama_pelanggan, catatan, total_harga, status) VALUES (?, ?, ?, ?, ?, 'pending')");
-    $stmt->bind_param('siiss', $kode, $nomor_meja, $nama_pelanggan, $catatan, $total);
+    $stmt->bind_param('sissi', $kode, $nomor_meja, $nama_pelanggan, $catatan, $total);
     $stmt->execute();
     $id_pesanan = $conn->insert_id;
     $stmt->close();
