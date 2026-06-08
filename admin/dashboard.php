@@ -41,37 +41,9 @@ $flash = getFlash();
         * { box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; }
         .sidebar { position: fixed; top: 0; left: 0; width: 240px; height: 100vh; background: var(--sidebar-bg); z-index: 1000; display: flex; flex-direction: column; overflow-y: auto; }
-       .sidebar-logo{
-    text-align: center;
-    padding: 20px;
-}
-
-.sidebar-logo img{
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-
-    background: white;
-    padding: 5px;
-
-    border: 3px solid #ff5722;
-
-    box-shadow: 0 0 15px rgba(255,87,34,.4);
-    margin-bottom: 10px;
-}
-
-.sidebar-logo h2{
-    color: white;
-    font-size: 24px;
-    margin: 0;
-}
-
-.sidebar-logo p{
-    color: rgba(255,255,255,.7);
-    font-size: 14px;
-    margin-top: 5px;
-}
+        .sidebar-logo { padding: 28px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .sidebar-logo h2 { color: white; font-size: 16px; font-weight: 800; margin: 0 0 2px; }
+        .sidebar-logo p { color: rgba(255,255,255,0.45); font-size: 11px; margin: 0; }
         .role-label { display: inline-block; background: rgba(124,58,237,0.25); color: #C084FC; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-top: 6px; border: 1px solid rgba(124,58,237,0.4); }
         .nav-section { padding: 16px 12px 8px; flex: 1; }
         .nav-section-label { color: rgba(255,255,255,0.3); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 0 8px; margin-bottom: 6px; }
@@ -136,8 +108,7 @@ $flash = getFlash();
 
 <div class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-    <img src="assets/images/logo.png" alt="KlikPenyet Logo">
-</div>
+        <div style="font-size:26px;margin-bottom:6px">🍗</div>
         <h2>Ayam Penyet</h2>
         <p>Bendungan Batusangkar</p>
         <span class="role-label">👑 Admin Panel</span>
