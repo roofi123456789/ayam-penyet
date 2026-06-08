@@ -176,12 +176,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </button>
         </form>
 
-        <hr class="divider">
-        <table class="cred-table">
-            <tr><td>Admin</td><td><code>admin</code> / <code>password</code></td></tr>
-            <tr><td>Kasir</td><td><code>kasir</code> / <code>password</code></td></tr>
-            <tr><td>Kitchen</td><td><code>kitchen</code> / <code>password</code></td></tr>
-        </table>
     </div>
 </div>
 <script>
