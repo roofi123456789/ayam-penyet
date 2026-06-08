@@ -102,9 +102,10 @@ switch ($action) {
 
         $kembalian   = $jumlah_bayar - $p['total_harga'];
         $waktu_bayar = date('Y-m-d H:i:s');
+        // status tetap 'pending' — kitchen yang akan ubah ke diproses & selesai
         $stmt2 = $conn->prepare("UPDATE pesanan SET
             status_bayar='lunas', jumlah_bayar=?, kembalian=?,
-            waktu_bayar=?, status='selesai', status_verifikasi='terverifikasi'
+            waktu_bayar=?, status_verifikasi='terverifikasi'
             WHERE kode_pesanan=?");
         $stmt2->bind_param('iiss', $jumlah_bayar, $kembalian, $waktu_bayar, $kode);
         $ok = $stmt2->execute();
@@ -124,9 +125,10 @@ switch ($action) {
 
         if ($keputusan === 'terima') {
             $waktu_bayar = date('Y-m-d H:i:s');
+            // status tetap 'pending' — kitchen yang akan ubah ke diproses & selesai
             $stmt = $conn->prepare("UPDATE pesanan SET
                 status_bayar='lunas', jumlah_bayar=total_harga, kembalian=0,
-                waktu_bayar=?, status='selesai', status_verifikasi='terverifikasi'
+                waktu_bayar=?, status_verifikasi='terverifikasi'
                 WHERE kode_pesanan=?");
             $stmt->bind_param('ss', $waktu_bayar, $kode);
         } else {
