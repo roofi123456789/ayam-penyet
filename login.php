@@ -70,16 +70,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         .login-wrapper { width: 100%; max-width: 440px; }
         .login-header { text-align: center; margin-bottom: 28px; }
-       .logo-box {
-    width: 280px;
-    height: 120px;
-    margin: 0 auto 15px;
+  .logo-box {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 25px;
+
+    border-radius: 50%;
+    overflow: hidden;
+
+    background: #fff;
+    border: 4px solid #ff5722;
+
     display: flex;
     justify-content: center;
     align-items: center;
-    background: transparent;
-    border-radius: 0;
-    box-shadow: none;
+
+    box-shadow:
+        0 0 25px rgba(255,87,34,.35),
+        0 10px 30px rgba(0,0,0,.3);
+
     animation: float 3s ease-in-out infinite;
 }
 
@@ -87,7 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    padding: 10px;
 }
+
         
         @keyframes float {
             0%,100% { transform: translateY(0); }
