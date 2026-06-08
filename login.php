@@ -70,15 +70,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         .login-wrapper { width: 100%; max-width: 440px; }
         .login-header { text-align: center; margin-bottom: 28px; }
-        .logo-box {
-            width: 86px; height: 86px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border-radius: 24px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 40px; margin: 0 auto 14px;
-            box-shadow: 0 12px 32px rgba(232,64,64,0.4);
-            animation: float 3s ease-in-out infinite;
-        }
+       .logo-box {
+    width: 280px;
+    height: 120px;
+    margin: 0 auto 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    animation: float 3s ease-in-out infinite;
+}
+
+.logo-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+        
         @keyframes float {
             0%,100% { transform: translateY(0); }
             50% { transform: translateY(-8px); }
