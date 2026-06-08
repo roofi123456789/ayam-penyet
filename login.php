@@ -133,7 +133,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 <div class="login-wrapper">
     <div class="login-header">
-        <div class="logo-box">🍗</div>
+        <div class="logo-box">
+    <img src="assets/img/logo.png" alt="KlikPenyet Logo">
+</div>
         <h1><?= APP_NAME ?></h1>
         <p>Sistem Manajemen Restoran</p>
     </div>
