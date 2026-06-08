@@ -58,6 +58,7 @@ $flash = getFlash();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
         :root{--primary:#E84040;--dark:#1A1A2E;--bg:#F0F2F5;--border:#E5E7EB;--radius:14px;--shadow:0 2px 16px rgba(0,0,0,0.07);--green:#16A34A;}
         *{box-sizing:border-box;}
@@ -470,6 +471,7 @@ $flash = getFlash();
     <img id="buktiFullImg" src="" alt="Bukti Transfer" style="opacity:0;transition:opacity .3s">
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // ── Tab switch
@@ -527,69 +529,144 @@ document.querySelectorAll('[id^="inp-"]').forEach(inp => {
 function konfirmasiCash(kode, id) {
     const jumlah = parseInt(document.getElementById('inp-' + id).value) || 0;
     const total  = parseInt(document.getElementById('inp-' + id).min) || 0;
-    if (jumlah < total) { alert('Uang tidak cukup!'); return; }
+    if (jumlah < total) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Uang Tidak Cukup!',
+            text: 'Jumlah uang yang diterima kurang dari total tagihan.',
+            confirmButtonColor: '#E84040',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
 
     const kem = jumlah - total;
-    if (!confirm('Konfirmasi bayar TUNAI?\n\nTotal: Rp ' + total.toLocaleString('id-ID') +
-                 '\nUang diterima: Rp ' + jumlah.toLocaleString('id-ID') +
-                 '\nKembalian: Rp ' + kem.toLocaleString('id-ID'))) return;
+    Swal.fire({
+        title: 'Konfirmasi Pembayaran TUNAI',
+        html:
+            '<div style="text-align:left;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:14px">' +
+            '<div style="background:#F9FAFB;border-radius:10px;padding:14px 16px;margin-bottom:8px">' +
+            '<div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:#6B7280">Total Tagihan</span><strong>Rp ' + total.toLocaleString('id-ID') + '</strong></div>' +
+            '<div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:#6B7280">Uang Diterima</span><strong style="color:#16A34A">Rp ' + jumlah.toLocaleString('id-ID') + '</strong></div>' +
+            '<hr style="margin:8px 0;border-color:#E5E7EB">' +
+            '<div style="display:flex;justify-content:space-between"><span style="color:#6B7280">Kembalian</span><strong style="color:#2563EB;font-size:16px">Rp ' + kem.toLocaleString('id-ID') + '</strong></div>' +
+            '</div>' +
+            '</div>',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#16A34A',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: '<i class="fas fa-check-circle"></i> Ya, Konfirmasi!',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+    }).then((result) => {
+        if (!result.isConfirmed) return;
 
-    const btn = document.getElementById('btnConfirm-' + id);
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+        const btn = document.getElementById('btnConfirm-' + id);
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
 
-    fetch('api_kasir.php', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'action=konfirmasi_cash&kode=' + encodeURIComponent(kode) + '&jumlah_bayar=' + jumlah
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            const card = document.getElementById('pcard-' + id);
-            if (card) {
-                card.style.borderColor = '#22C55E';
-                card.style.background  = '#F0FDF4';
-                card.innerHTML += '<div style="text-align:center;padding:12px;font-weight:800;font-size:15px;color:#16A34A">✅ Dikonfirmasi! Kembalian: Rp ' + data.kembalian.toLocaleString('id-ID') + '</div>';
-                setTimeout(() => card.remove(), 3000);
+        fetch('api_kasir.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'action=konfirmasi_cash&kode=' + encodeURIComponent(kode) + '&jumlah_bayar=' + jumlah
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pembayaran Dikonfirmasi!',
+                    html: '<p style="font-size:15px">Kembalian ke pelanggan:</p>' +
+                          '<div style="font-size:28px;font-weight:800;color:#16A34A">Rp ' + data.kembalian.toLocaleString('id-ID') + '</div>',
+                    confirmButtonColor: '#16A34A',
+                    confirmButtonText: 'Selesai',
+                    timer: 4000,
+                    timerProgressBar: true
+                }).then(() => {
+                    const card = document.getElementById('pcard-' + id);
+                    if (card) card.remove();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: data.msg || 'Terjadi kesalahan, coba lagi.',
+                    confirmButtonColor: '#E84040'
+                });
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> Konfirmasi & Terima Bayar';
             }
-        } else {
-            alert('❌ ' + (data.msg || 'Gagal'));
+        })
+        .catch(() => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Koneksi Error',
+                text: 'Tidak dapat terhubung ke server, periksa koneksi Anda.',
+                confirmButtonColor: '#E84040'
+            });
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-check-circle"></i> Konfirmasi & Terima Bayar';
-        }
-    })
-    .catch(() => { alert('❌ Koneksi error'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-circle"></i> Konfirmasi & Terima Bayar'; });
+        });
+    });
 }
 
 // ── Verifikasi QRIS
 function verifikasiQris(kode, keputusan, id) {
-    const msg = keputusan === 'terima'
-        ? 'Terima bukti transfer ini? Pembayaran akan dikonfirmasi lunas.'
-        : 'Tolak bukti ini? Pelanggan akan diminta upload ulang.';
-    if (!confirm(msg)) return;
+    const isOk = keputusan === 'terima';
 
-    fetch('api_kasir.php', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'action=verifikasi_qris&kode=' + encodeURIComponent(kode) + '&keputusan=' + keputusan
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            const card = document.getElementById('pcard-q-' + id);
-            if (card) {
-                const isOk = keputusan === 'terima';
-                card.style.borderColor = isOk ? '#22C55E' : '#E84040';
-                card.style.background  = isOk ? '#F0FDF4' : '#FEF2F2';
-                card.innerHTML += '<div style="text-align:center;padding:12px;font-weight:800;font-size:15px;color:' + (isOk?'#16A34A':'#E84040') + '">' + (isOk ? '✅ Terverifikasi!' : '❌ Ditolak') + '</div>';
-                setTimeout(() => card.remove(), 3000);
+    Swal.fire({
+        title: isOk ? 'Terima Pembayaran QRIS?' : 'Tolak Bukti Transfer?',
+        text: isOk
+            ? 'Bukti transfer akan diverifikasi dan pesanan dikonfirmasi lunas.'
+            : 'Pelanggan akan diminta untuk mengupload ulang bukti transfer.',
+        icon: isOk ? 'question' : 'warning',
+        showCancelButton: true,
+        confirmButtonColor: isOk ? '#16A34A' : '#E84040',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: isOk ? '<i class="fas fa-check-circle"></i> Ya, Terima!' : '<i class="fas fa-times"></i> Ya, Tolak!',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+    }).then((result) => {
+        if (!result.isConfirmed) return;
+
+        fetch('api_kasir.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'action=verifikasi_qris&kode=' + encodeURIComponent(kode) + '&keputusan=' + keputusan
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: isOk ? 'success' : 'info',
+                    title: isOk ? 'Pembayaran Terverifikasi!' : 'Bukti Ditolak',
+                    text: isOk ? 'Pesanan telah dikonfirmasi lunas.' : 'Pelanggan akan diminta upload ulang.',
+                    confirmButtonColor: isOk ? '#16A34A' : '#E84040',
+                    timer: 3000,
+                    timerProgressBar: true
+                }).then(() => {
+                    const card = document.getElementById('pcard-q-' + id);
+                    if (card) card.remove();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: data.msg || 'Terjadi kesalahan, coba lagi.',
+                    confirmButtonColor: '#E84040'
+                });
             }
-        } else {
-            alert('❌ ' + (data.msg || 'Gagal'));
-        }
-    })
-    .catch(() => alert('❌ Koneksi error'));
+        })
+        .catch(() => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Koneksi Error',
+                text: 'Tidak dapat terhubung ke server.',
+                confirmButtonColor: '#E84040'
+            });
+        });
+    });
 }
 
 // ── Fullscreen viewer
