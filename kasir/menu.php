@@ -279,7 +279,7 @@ $flash = getFlash();
 
 <script>
 function toggleTersedia(id) {
-    fetch('api_admin.php', {
+    fetch('api_kasir.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: `action=toggle_tersedia&id=${id}`

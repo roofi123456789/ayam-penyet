@@ -13,11 +13,28 @@ $meja_list = [];
 $res = $conn->query("SELECT * FROM meja ORDER BY nomor_meja ASC");
 while ($row = $res->fetch_assoc()) $meja_list[] = $row;
 
-// Ambil IP lokal dari server
-$server_ip = $_SERVER['SERVER_ADDR'] ?? '192.168.1.10';
-if ($server_ip === '127.0.0.1' || $server_ip === '::1') {
-    $server_ip = '192.168.1.10'; // Default untuk panduan
+// Ambil base URL - support ngrok & lokal
+// Cek apakah ada URL ngrok yang disimpan di file konfigurasi
+$config_file = __DIR__ . '/../ngrok_url.txt';
+$saved_url = '';
+if (file_exists($config_file)) {
+    $saved_url = trim(file_get_contents($config_file));
 }
+
+// Deteksi otomatis: kalau diakses via ngrok, pakai URL ngrok
+$current_host = $_SERVER['HTTP_HOST'] ?? '';
+$current_scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
+$auto_base_url = $current_scheme . '://' . $current_host;
+
+// Prioritas: saved ngrok URL > auto detect > fallback lokal
+if (!empty($saved_url)) {
+    $base_url = rtrim($saved_url, '/');
+} else {
+    $base_url = $auto_base_url;
+}
+
+// Untuk kompatibilitas lama
+$server_ip = $current_host;
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -106,7 +123,8 @@ if ($server_ip === '127.0.0.1' || $server_ip === '::1') {
             border-radius: 10px;
             margin-bottom: 12px;
         }
-        .qr-container canvas, .qr-container img { display: block !important; }
+        .qr-container canvas { display: block !important; }
+        .qr-container img { display: none !important; }
         .qr-url { font-size: 10px; color: #888; text-align: center; word-break: break-all; margin-bottom: 12px; font-family: monospace; }
         
         .btn-download {
@@ -169,14 +187,20 @@ if ($server_ip === '127.0.0.1' || $server_ip === '::1') {
     </div>
 
     <div class="page-body">
-        <!-- IP Config -->
-        <div class="ip-config-card">
-            <label><i class="fas fa-network-wired me-2"></i>IP Server Lokal:</label>
-            <input type="text" class="ip-input" id="ipInput" value="<?= htmlspecialchars($server_ip) ?>" placeholder="192.168.1.10">
-            <button class="btn-apply" onclick="applyIP()">
-                <i class="fas fa-sync me-1"></i>Generate Ulang
-            </button>
-            <span class="current-url" id="urlPreview">http://<?= htmlspecialchars($server_ip) ?>/ayam-penyet/?meja=N</span>
+        <!-- URL Config -->
+        <div class="ip-config-card" style="flex-direction:column;align-items:flex-start;gap:12px">
+            <div style="display:flex;align-items:center;gap:10px;width:100%;flex-wrap:wrap">
+                <label><i class="fas fa-globe me-2"></i>Base URL (Ngrok / Lokal):</label>
+                <input type="text" class="ip-input" id="urlInput" value="<?= htmlspecialchars($base_url) ?>" placeholder="https://xxx.ngrok-free.app" style="width:320px">
+                <button class="btn-apply" onclick="applyURL()">
+                    <i class="fas fa-sync me-1"></i>Generate Ulang
+                </button>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <span style="background:rgba(255,255,255,0.1);border-radius:6px;padding:4px 10px;font-size:11px;color:rgba(255,255,255,0.5)">📋 URL ngrok kamu:</span>
+                <code style="color:#4ade80;font-size:12px" id="urlPreview"><?= htmlspecialchars($base_url) ?>/ayam-penyet/?meja=N</code>
+                <button onclick="simpanURL()" style="background:#4ade80;color:#1A1A2E;border:none;border-radius:6px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer">💾 Simpan</button>
+            </div>
         </div>
 
         <!-- QR Grid -->
@@ -198,27 +222,29 @@ if ($server_ip === '127.0.0.1' || $server_ip === '::1') {
             <?php endforeach; ?>
         </div>
 
-        <!-- Panduan -->
         <div style="background:white;border-radius:var(--radius);padding:20px 24px;margin-top:24px;box-shadow:var(--shadow)">
-            <h3 style="font-size:15px;font-weight:800;margin:0 0 14px">📖 Cara Menggunakan QR Code</h3>
+            <h3 style="font-size:15px;font-weight:800;margin:0 0 14px">📖 Cara Menggunakan QR Code via Internet (Ngrok)</h3>
             <ol style="font-size:13px;color:#555;line-height:1.8;margin:0;padding-left:20px">
-                <li>Pastikan semua perangkat (HP pelanggan & server) terhubung ke WiFi yang sama</li>
-                <li>Ubah IP di kolom di atas sesuai IP komputer server (cek dengan <code>ipconfig</code> di CMD)</li>
-                <li>Klik "Generate Ulang" untuk membuat QR Code dengan IP yang benar</li>
-                <li>Klik "Download QR" untuk setiap meja, lalu cetak dan laminating</li>
-                <li>Tempel QR Code di atas meja masing-masing</li>
-                <li>Pelanggan scan QR → langsung ke menu · Nomor meja tersimpan otomatis!</li>
+                <li>Pastikan <strong>XAMPP</strong> (Apache + MySQL) sudah nyala</li>
+                <li>Pastikan <strong>ngrok</strong> sudah jalan: <code>ngrok http 80</code></li>
+                <li>Copy URL ngrok dari CMD (contoh: <code>https://overrate-lather-tarnish.ngrok-free.app</code>)</li>
+                <li>Paste URL ngrok di kolom atas, klik <strong>"Generate Ulang"</strong>, lalu klik <strong>"Simpan"</strong></li>
+                <li>Download QR Code tiap meja lalu cetak & laminating</li>
+                <li>Pelanggan scan QR dari HP mana saja → langsung ke menu online! 🎉</li>
             </ol>
+            <div style="background:#fff8e1;border-radius:8px;padding:12px 16px;margin-top:12px;font-size:12px;color:#b45309">
+                ⚠️ <strong>Penting:</strong> URL ngrok berubah setiap kali ngrok di-restart. Jika URL berubah, ulangi langkah 3-5 dan cetak ulang QR Code.
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    let currentIP = '<?= htmlspecialchars($server_ip) ?>';
+    let currentBaseURL = '<?= htmlspecialchars($base_url) ?>';
     const mejaNums = <?= json_encode(array_column($meja_list, 'nomor_meja')) ?>;
 
-    function generateQR(meja, ip) {
-        const url = `http://${ip}/ayam-penyet/?meja=${meja}`;
+    function generateQR(meja, baseUrl) {
+        const url = `${baseUrl}/ayam-penyet/?meja=${meja}`;
         const container = document.getElementById(`qr-${meja}`);
         const urlEl = document.getElementById(`url-${meja}`);
         if (!container) return;
@@ -234,12 +260,27 @@ if ($server_ip === '127.0.0.1' || $server_ip === '::1') {
         urlEl.textContent = url;
     }
 
-    function applyIP() {
-        const ip = document.getElementById('ipInput').value.trim();
-        if (!ip) { alert('Masukkan IP yang valid!'); return; }
-        currentIP = ip;
-        document.getElementById('urlPreview').textContent = `http://${ip}/ayam-penyet/?meja=N`;
-        mejaNums.forEach(n => generateQR(n, ip));
+    function applyURL() {
+        const url = document.getElementById('urlInput').value.trim().replace(/\/$/, '');
+        if (!url) { alert('Masukkan URL yang valid!'); return; }
+        currentBaseURL = url;
+        document.getElementById('urlPreview').textContent = `${url}/ayam-penyet/?meja=N`;
+        mejaNums.forEach(n => generateQR(n, url));
+    }
+
+    function simpanURL() {
+        const url = document.getElementById('urlInput').value.trim().replace(/\/$/, '');
+        fetch('save_ngrok_url.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'url=' + encodeURIComponent(url)
+        }).then(r => r.text()).then(res => {
+            if (res === 'ok') {
+                alert('✅ URL berhasil disimpan! QR Code akan tetap pakai URL ini.');
+            } else {
+                alert('⚠️ Gagal simpan, tapi QR Code sudah ter-generate dengan URL baru.');
+            }
+        }).catch(() => alert('⚠️ Gagal simpan, tapi QR Code sudah ter-generate.'));
     }
 
     function downloadQR(meja) {
@@ -266,7 +307,7 @@ if ($server_ip === '127.0.0.1' || $server_ip === '::1') {
 
     // Generate semua QR saat load
     window.onload = () => {
-        mejaNums.forEach(n => generateQR(n, currentIP));
+        mejaNums.forEach(n => generateQR(n, currentBaseURL));
     };
 </script>
 </body>
