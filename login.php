@@ -7,7 +7,7 @@ if (isLoggedIn()) { //pengguna sudah memiliki akses login
     if ($role === 'admin') redirect('/ayam-penyet/admin/dashboard.php');
     elseif ($role === 'kasir') redirect('/ayam-penyet/kasir/dashboard.php');
     elseif ($role === 'kitchen') redirect('/ayam-penyet/kitchen/index.php');
-    else redirect('/ayam-penyet/login.php'); //  meindahkan pengguna  ke halaman tertentu
+    else redirect('/ayam-penyet/login.php'); //  memindahkan pengguna  ke halaman tertentu
 }
 
 $error = '';
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') { // tombol login
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - <?= APP_NAME ?></title>
+    <title>Login - Ayam Penyet Bendungan Batusangkar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
@@ -157,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') { // tombol login
         <div class="logo-box">
     <img src="admin/assets/images/logo.png" alt="KlikPenyet Logo">
 </div>
-        <h1><?= APP_NAME ?></h1>
+        <h1>Ayam Penyet Bendungan Batusangkar</h1>
         <p>Sistem Manajemen Restoran</p>
     </div>
 
