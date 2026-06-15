@@ -173,27 +173,7 @@ $NAMA_QRIS = 'Ayam Penyet Bendungan Batusangkar';
         .ttb-label { font-size: 13px; opacity: .7; }
         .ttb-value { font-size: 22px; font-weight: 800; }
 
-        /* ── PANEL QRIS ── */
-        .qris-nomor-box {
-            background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
-            border-radius: 14px; padding: 20px;
-            text-align: center; margin-bottom: 14px;
-        }
-        .qris-app-icons { display: flex; justify-content: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
-        .app-badge {
-            background: rgba(255,255,255,0.1); border-radius: 50px;
-            padding: 5px 12px; font-size: 11px; font-weight: 700; color: white;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        .qris-to-label { font-size: 12px; color: rgba(255,255,255,0.55); margin: 0 0 6px; }
-        .qris-nomor {
-            font-size: 26px; font-weight: 800; color: white;
-            letter-spacing: 2px; font-family: 'Courier New', monospace;
-            margin: 0 0 4px;
-        }
-        .qris-nama { font-size: 12px; color: rgba(255,255,255,0.6); margin: 0 0 14px; }
-        .qris-amount-label { font-size: 11px; color: rgba(255,255,255,0.5); margin: 0; }
-        .qris-amount { font-size: 20px; font-weight: 800; color: #FFD700; margin: 4px 0 0; }
+    
 
         .copy-btn {
             background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
@@ -338,11 +318,7 @@ $NAMA_QRIS = 'Ayam Penyet Bendungan Batusangkar';
         <div class="metode-name">Tunai</div>
         <div class="metode-sub">Bayar di Kasir</div>
     </div>
-    <div class="metode-card" id="card-qris" onclick="pilih('qris')">
-        <span class="metode-icon">📱</span>
-        <div class="metode-name">QRIS / GoPay</div>
-        <div class="metode-sub">Transfer ke No. HP</div>
-    </div>
+   
 </div>
 
 <!-- ══ PANEL CASH ══ -->
@@ -391,56 +367,8 @@ $NAMA_QRIS = 'Ayam Penyet Bendungan Batusangkar';
     </div>
 </div>
 
-<!-- ══ PANEL QRIS ══ -->
-<div class="payment-panel" id="panel-qris">
-    <div class="panel-title">📱 Transfer via GoPay / QRIS</div>
 
-    <!-- Nomor Tujuan -->
-    <div class="qris-nomor-box">
-        <div class="qris-app-icons">
-            <span class="app-badge">GoPay</span>
-            <span class="app-badge">OVO</span>
-            <span class="app-badge">DANA</span>
-            <span class="app-badge">ShopeePay</span>
-            <span class="app-badge">LinkAja</span>
-        </div>
-        <div class="qris-to-label">Transfer ke Nomor</div>
-        <div class="qris-nomor" id="displayNomor"><?= $NO_QRIS ?></div>
-        <div class="qris-nama">a.n. <?= $NAMA_QRIS ?></div>
-        <button class="copy-btn" onclick="copyNomor()" id="copyNomorBtn">
-            <i class="fas fa-copy"></i> Salin Nomor
-        </button>
-        <div class="qris-amount-label">Jumlah yang harus ditransfer</div>
-        <div class="qris-amount"><?= formatRupiah($total) ?></div>
-        <button class="copy-btn" onclick="copyJumlah()" id="copyJumlahBtn" style="margin-top:6px">
-            <i class="fas fa-copy"></i> Salin Jumlah
-        </button>
-    </div>
-
-    <!-- Langkah-langkah -->
-    <div class="qris-steps">
-        <div class="qris-steps-title">📋 Cara Transfer:</div>
-        <div class="qris-step"><span>1️⃣</span><span>Buka aplikasi GoPay / dompet digital Anda</span></div>
-        <div class="qris-step"><span>2️⃣</span><span>Pilih <strong>Kirim / Transfer</strong> ke sesama atau nomor HP</span></div>
-        <div class="qris-step"><span>3️⃣</span><span>Masukkan nomor <strong><?= $NO_QRIS ?></strong></span></div>
-        <div class="qris-step"><span>4️⃣</span><span>Masukkan jumlah <strong><?= formatRupiah($total) ?></strong> (harus tepat)</span></div>
-        <div class="qris-step"><span>5️⃣</span><span>Screenshot bukti transfer → upload di bawah ini</span></div>
-    </div>
-
-    <!-- Upload Bukti -->
-    <label class="upload-label">📸 Upload Bukti Transfer *</label>
-    <div class="upload-box" id="uploadBox">
-        <input type="file" accept="image/*" id="buktiFoto" onchange="previewBukti(event)" capture="environment">
-        <span class="upload-icon" id="uploadIcon">📤</span>
-        <p class="upload-text" id="uploadText">Tap untuk pilih atau foto bukti</p>
-        <p class="upload-hint">JPG, PNG – Maks. 5MB</p>
-        <img id="previewBukti" alt="Preview bukti transfer">
-    </div>
-    <div class="file-info" id="fileInfo">
-        <i class="fas fa-check-circle"></i>
-        <span id="fileInfoText"></span>
-    </div>
-
+    
     <div class="warning-box">
         <i class="fas fa-exclamation-triangle" style="margin-top:1px;flex-shrink:0"></i>
         <span>Pastikan jumlah transfer <strong>tepat <?= formatRupiah($total) ?></strong>. Bukti transfer wajib diupload untuk verifikasi. Admin akan memverifikasi dalam beberapa menit.</span>
