@@ -2,21 +2,21 @@
 require_once 'koneksi.php';
 
 // Sudah login? Redirect sesuai role
-if (isLoggedIn()) {
-    $role = getUserRole();
+if (isLoggedIn()) { //pengguna sudah memiliki akses login
+    $role = getUserRole(); // mengambil hak akses yang sudah login
     if ($role === 'admin') redirect('/ayam-penyet/admin/dashboard.php');
     elseif ($role === 'kasir') redirect('/ayam-penyet/kasir/dashboard.php');
     elseif ($role === 'kitchen') redirect('/ayam-penyet/kitchen/index.php');
-    else redirect('/ayam-penyet/login.php');
+    else redirect('/ayam-penyet/login.php'); //  meindahkan pengguna  ke halaman tertentu
 }
 
 $error = '';
-if (isset($_GET['error']) && $_GET['error'] === 'akses') {
+if (isset($_GET['error']) && $_GET['error'] === 'akses') { //membaca parameter url
     $error = 'Anda tidak memiliki akses ke halaman tersebut.';
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = sanitize($_POST['username'] ?? '');
+if ($_SERVER['REQUEST_METHOD'] === 'POST') { // tombol login
+    $username = sanitize($_POST['username'] ?? ''); //data yang diinput
     $password = $_POST['password'] ?? '';
 
     if (empty($username) || empty($password)) {
@@ -29,10 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->close();
 
         if ($user && password_verify($password, $user['password'])) {
-            $_SESSION['user_id']   = $user['id'];
-            $_SESSION['user_nama'] = $user['nama'];
+            $_SESSION['user_id']   = $user['id']; //menyimpan id pengguna
+            $_SESSION['user_nama'] = $user['nama']; //menyimpan nama penguna
             $_SESSION['user_user'] = $user['username'];
-            $_SESSION['user_role'] = $user['role'] ?? 'kasir';
+            $_SESSION['user_role'] = $user['role'] ?? 'kasir';//menyimpan hak akses pengguna
             // Legacy support
             $_SESSION['admin_id']   = $user['id'];
             $_SESSION['admin_nama'] = $user['nama'];
