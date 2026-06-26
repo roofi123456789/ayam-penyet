@@ -21,15 +21,18 @@ if ($periode === 'bulanan') {
     $where_tgl   = "MONTH(p.tanggal)=$bulan AND YEAR(p.tanggal)=$tahun";
     $where_nop   = "MONTH(tanggal)=$bulan AND YEAR(tanggal)=$tahun";
     $judul_periode = date('F Y', mktime(0,0,0,$bulan,1,$tahun));
+    $label_periode = 'Bulanan';
 } elseif ($periode === 'tahunan') {
     $where_tgl   = "YEAR(p.tanggal)=$tahun";
     $where_nop   = "YEAR(tanggal)=$tahun";
     $judul_periode = "Tahun $tahun";
+    $label_periode = 'Tahunan';
 } else { // harian (default)
     $periode     = 'harian';
     $where_tgl   = "DATE(p.tanggal)='$tanggal'";
     $where_nop   = "DATE(tanggal)='$tanggal'";
     $judul_periode = date('d M Y', strtotime($tanggal));
+    $label_periode = 'Harian';
 }
 
 // Pesanan list
@@ -272,8 +275,9 @@ if (empty($tahun_list)) $tahun_list = [(int)date('Y')];
     <div class="topbar">
         <h1>📊 Laporan Penjualan</h1>
         <div class="d-flex gap-2 no-print">
-            <button class="btn-s btn-light" onclick="window.print()"><i class="fas fa-print"></i> Cetak</button>
-            <button class="btn-s btn-dark" onclick="exportCSV()"><i class="fas fa-download"></i> CSV</button>
+            <button class="btn-s btn-light" onclick="showDownloadModal()">
+                <i class="fas fa-download"></i> Unduh Laporan
+            </button>
         </div>
     </div>
 
@@ -589,18 +593,72 @@ if (empty($tahun_list)) $tahun_list = [(int)date('Y')];
     </div><!-- /page-body -->
 </div>
 
+<!-- MODAL DOWNLOAD -->
+<div id="dlModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;">
+    <div style="background:white;border-radius:18px;padding:32px 28px;width:420px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+            <div>
+                <h3 style="font-size:16px;font-weight:800;color:var(--dark);margin:0">Unduh Laporan</h3>
+                <p style="font-size:12px;color:#888;margin:4px 0 0" id="dlSubtitle"></p>
+            </div>
+            <button onclick="hideDownloadModal()" style="border:none;background:#F3F4F6;border-radius:8px;width:32px;height:32px;font-size:16px;cursor:pointer;color:#666;line-height:1">&#x00D7;</button>
+        </div>
+        <a id="dlPdfBtn" href="#" target="_blank"
+           style="display:flex;align-items:center;gap:14px;padding:16px 18px;border:2px solid #FEE2E2;border-radius:12px;text-decoration:none;margin-bottom:12px;transition:all 0.2s;background:#FFF5F5"
+           onmouseover="this.style.borderColor='#E84040';this.style.background='#FEF2F2'"
+           onmouseout="this.style.borderColor='#FEE2E2';this.style.background='#FFF5F5'">
+            <div style="width:44px;height:44px;background:#E84040;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">&#x1F4C4;</div>
+            <div style="flex:1">
+                <div style="font-size:14px;font-weight:800;color:var(--dark)">Cetak / Simpan PDF</div>
+                <div style="font-size:12px;color:#888;margin-top:2px">Buka tampilan cetak profesional, lalu Ctrl+P &#x2192; Save as PDF</div>
+            </div>
+            <i class="fas fa-external-link-alt" style="color:#E84040;font-size:13px"></i>
+        </a>
+        <a id="dlExcelBtn" href="#"
+           style="display:flex;align-items:center;gap:14px;padding:16px 18px;border:2px solid #D1FAE5;border-radius:12px;text-decoration:none;margin-bottom:12px;transition:all 0.2s;background:#F0FDF4"
+           onmouseover="this.style.borderColor='#22C55E';this.style.background='#DCFCE7'"
+           onmouseout="this.style.borderColor='#D1FAE5';this.style.background='#F0FDF4'">
+            <div style="width:44px;height:44px;background:#22C55E;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">&#x1F4CA;</div>
+            <div style="flex:1">
+                <div style="font-size:14px;font-weight:800;color:var(--dark)">Unduh Excel (.xlsx)</div>
+                <div style="font-size:12px;color:#888;margin-top:2px">Spreadsheet dengan 2 sheet: Ringkasan &amp; Detail Pesanan</div>
+            </div>
+            <i class="fas fa-download" style="color:#22C55E;font-size:13px"></i>
+        </a>
+        <div style="border-top:1px solid #F3F4F6;padding-top:12px;margin-top:4px">
+            <button onclick="exportCSV()" style="display:flex;align-items:center;gap:8px;padding:9px 14px;border:1.5px solid #E5E7EB;border-radius:8px;background:white;font-size:12px;font-weight:700;color:#666;cursor:pointer;font-family:inherit;width:100%;justify-content:center">
+                <i class="fas fa-file-csv"></i> Unduh CSV (alternatif)
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
-// Chart Tren (harian/bulanan/tahunan)
+function buildParams(){
+    const params = new URLSearchParams(window.location.search);
+    const qs = params.toString();
+    return qs ? '?' + qs : '?periode=<?= $periode ?>&tanggal=<?= $tanggal ?>&bulan=<?= $bulan ?>&tahun=<?= $tahun ?>';
+}
+function showDownloadModal(){
+    const qs = buildParams();
+    document.getElementById('dlPdfBtn').href = 'laporan_pdf.php' + qs;
+    document.getElementById('dlExcelBtn').href = 'laporan_excel.php' + qs;
+    document.getElementById('dlSubtitle').textContent = 'Periode: <?= ucfirst($periode) ?> \u2014 <?= $judul_periode ?>';
+    document.getElementById('dlModal').style.display = 'flex';
+}
+function hideDownloadModal(){
+    document.getElementById('dlModal').style.display = 'none';
+}
+document.getElementById('dlModal').addEventListener('click', function(e){
+    if(e.target === this) hideDownloadModal();
+});
+
+// Chart Tren
 const trendData = <?= json_encode($trend_data) ?>;
 const periode = '<?= $periode ?>';
 const ctxT = document.getElementById('chartTren');
 if(ctxT && trendData.length > 0){
-    const isActive = trendData.map(d => {
-        if(periode === 'harian') return d.label === '<?= date('d/m', strtotime($tanggal)) ?>';
-        if(periode === 'bulanan') return false;
-        if(periode === 'tahunan') return false;
-        return false;
-    });
+    const isActive = trendData.map(d => periode==='harian' ? d.label==='<?= date('d/m', strtotime($tanggal)) ?>' : false);
     new Chart(ctxT,{
         type:'bar',
         data:{
@@ -624,7 +682,7 @@ if(ctxT && trendData.length > 0){
     });
 }
 
-// Chart Metode Pie
+// Chart Metode
 const mData = <?= json_encode(array_values($metode_stats)) ?>;
 const mKeys = <?= json_encode(array_keys($metode_stats)) ?>;
 const mLabels={cash:'Tunai',qris:'QRIS',transfer:'Transfer'};
@@ -635,11 +693,7 @@ if(ctxM && mData.length>0){
         type:'doughnut',
         data:{
             labels:mKeys.map(k=>mLabels[k]||k),
-            datasets:[{
-                data:mData.map(d=>parseInt(d.total)),
-                backgroundColor:mKeys.map(k=>mColors[k]||'#E5E7EB'),
-                borderWidth:3,borderColor:'#fff'
-            }]
+            datasets:[{data:mData.map(d=>parseInt(d.total)),backgroundColor:mKeys.map(k=>mColors[k]||'#E5E7EB'),borderWidth:3,borderColor:'#fff'}]
         },
         options:{
             responsive:true,maintainAspectRatio:false,
@@ -654,8 +708,9 @@ if(ctxM && mData.length>0){
 
 // Export CSV
 function exportCSV(){
+    hideDownloadModal();
     const rows=[['No','Kode','Pemesan','Meja','Waktu','Item','Total','Status','Status Bayar','Metode','Kembalian']];
-    document.querySelectorAll('#tabelPesanan tbody tr').forEach((tr,i)=>{
+    document.querySelectorAll('#tabelPesanan tbody tr').forEach((tr)=>{
         const td=[...tr.querySelectorAll('td')].map(c=>c.innerText.trim());
         rows.push(td.slice(0,11));
     });
