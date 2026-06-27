@@ -387,7 +387,7 @@ if (empty($tahun_list)) $tahun_list = [(int)date('Y')];
         <div class="chart-row">
             <div class="chart-box">
                 <div class="ctitle">
-                    <?php if($periode!='harian') echo '📈 Tren Omzet 7 Hari Terakhir';
+                    <?php if($periode==='harian') echo '📈 Tren Omzet 7 Hari Terakhir';
                     elseif($periode==='bulanan') echo '📈 Omzet per Hari — '.$judul_periode;
                     else echo '📈 Omzet per Bulan — '.$judul_periode; ?>
                 </div>
